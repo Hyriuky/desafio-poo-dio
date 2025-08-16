@@ -4,9 +4,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-public class Mentoria extends Conteudo{
+public class Mentoria extends Conteudo {
 
     private LocalDate data;
+    private Instrutor instrutor;
 
     @Override
     public double calcularXp() {
@@ -24,9 +25,16 @@ public class Mentoria extends Conteudo{
         this.data = data;
     }
 
-     // Definindo o formato desejado
+    public Instrutor getInstrutor() {
+        return instrutor;
+    }
+
+    public void setInstrutor(Instrutor instrutor) {
+        this.instrutor = instrutor;
+    }
+
+    // Definindo o formato desejado
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy", new Locale("pt", "BR"));
-   
 
     @Override
     public String toString() {
@@ -34,6 +42,7 @@ public class Mentoria extends Conteudo{
                 "titulo='" + getTitulo() + '\'' +
                 ", descricao='" + getDescricao() + '\'' +
                 ", data=" + data.format(formatter) +
+                ", instrutor=" + (instrutor != null ? instrutor.getNome() : "N/A") +
                 '}';
     }
 }

@@ -4,6 +4,7 @@ import java.util.*;
 
 public class Dev implements Comparable<Dev> {
     private String nome;
+    private int nivel = 1;
     private Set<Conteudo> conteudosInscritos = new LinkedHashSet<>();
     private Set<Conteudo> conteudosConcluidos = new LinkedHashSet<>();
 
@@ -22,26 +23,27 @@ public class Dev implements Comparable<Dev> {
         if (conteudo.isPresent()) {
             this.conteudosConcluidos.add(conteudo.get());
             this.conteudosInscritos.remove(conteudo.get());
+            atualizarNivel(); // Verifica se o dev sobe de nível
         } else {
             System.err.println("Você não está matriculado em nenhum conteúdo!");
         }
     }
+    
+    private void atualizarNivel() {
+        double totalXp = calcularTotalXp();
+        // A cada 100 de XP, o Dev sobe de nível
+        int novoNivel = (int) (totalXp / 100) + 1;
+        if (novoNivel > this.nivel) {
+            this.nivel = novoNivel;
+            System.out.println("Parabéns, " + getNome() + "! Você subiu para o nível " + this.nivel + "!");
+        }
+    }
 
     public double calcularTotalXp() {
-        Iterator<Conteudo> iterator = this.conteudosConcluidos.iterator();
-        double soma = 0;
-        while (iterator.hasNext()) {
-            double next = iterator.next().calcularXp();
-            soma += next;
-        }
-        return soma;
-
-        /*
-         * return this.conteudosConcluidos
-         * .stream()
-         * .mapToDouble(Conteudo::calcularXp)
-         * .sum();
-         */
+        return this.conteudosConcluidos
+                .stream()
+                .mapToDouble(Conteudo::calcularXp)
+                .sum();
     }
 
     public String getNome() {
@@ -50,6 +52,10 @@ public class Dev implements Comparable<Dev> {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+    
+    public int getNivel() {
+        return nivel;
     }
 
     public Set<Conteudo> getConteudosInscritos() {
@@ -70,13 +76,10 @@ public class Dev implements Comparable<Dev> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         Dev dev = (Dev) o;
-        return Objects.equals(nome, dev.nome) && Objects.equals(conteudosInscritos, dev.conteudosInscritos)
-                && Objects.equals(conteudosConcluidos, dev.conteudosConcluidos);
+        return Objects.equals(nome, dev.nome) && Objects.equals(conteudosInscritos, dev.conteudosInscritos) && Objects.equals(conteudosConcluidos, dev.conteudosConcluidos);
     }
 
     @Override
@@ -88,8 +91,9 @@ public class Dev implements Comparable<Dev> {
     public String toString() {
         return "Dev{" +
                 "nome='" + nome + '\'' +
-                ", conteudosInscritos=" + conteudosInscritos +
-                ", conteudosConcluidos=" + conteudosConcluidos +
+                ", nivel=" + nivel +
+                ", conteudosInscritos=" + conteudosInscritos.size() +
+                ", conteudosConcluidos=" + conteudosConcluidos.size() +
                 '}';
     }
 }
